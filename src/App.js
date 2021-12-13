@@ -1,6 +1,6 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import { BrowserRouter, NavLink } from 'react-router-dom';
+import { BrowserRouter, NavLink, Route, Switch } from 'react-router-dom';
 
 import CharacterList from './components/Characters/CharacterList';
 import FilmList from './components/Films/FilmList';
@@ -10,10 +10,9 @@ function App() {
   const [characters, setCharacters] = useState([]);
 
   useEffect(() => {
-    getFilms();
+    getFilms(films);
     getCharacters();
   }, []);
-
   const getFilms = async () => {
     // Add your code here!
     // 1. Get data using fetch from https://the-one-api.dev/v2/movie/ (don't forget to set your header!)
@@ -27,7 +26,24 @@ function App() {
 
     // 3. Set the resulting transformation as state using setFilms
     // 4. You'll know it works if the films show up on the page
-    return [];
+    const resp = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/rest/v1/films`, {
+      headers: {
+        apikey: process.env.REACT_APP_SUPABASE_KEY,
+        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+      },
+    });
+    const data = await resp.json();
+
+    const filmData = data.map((obj) => [
+      obj.title,
+      obj.title,
+      obj.boxOfficeRevenueInMillions,
+      obj.academyAwardNominations,
+    ]);
+
+    console.log(filmData);
+    // data.map() put copy and paste data from console.log(data). transform into above info.
+    return [films];
   };
 
   const getCharacters = async () => {
@@ -43,7 +59,15 @@ function App() {
     //    ]
     // 3. Set the resulting transformation as state using setCharacters
     // 4. You'll know it works if the characters show up on the page
-    return [];
+    const resp = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/rest/v1/characters`, {
+      headers: {
+        apikey: process.env.REACT_APP_SUPABASE_KEY,
+        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+      },
+    });
+    const data = await resp.json();
+    console.log(data);
+    return [characters];
   };
 
   return (
@@ -57,7 +81,16 @@ function App() {
             Characters
           </NavLink>
         </header>
-        {/* ADD YOUR ROUTES HERE */}
+        <Switch>
+          <Route exact path="/films">
+            <FilmList setFilms={setFilms} films={films} />
+            <h1> Hello </h1>
+          </Route>
+          <Route path="/characters">
+            <CharacterList characters={characters} setCharacters={setCharacters} />
+            <h1>Test</h1>
+          </Route>
+        </Switch>
       </BrowserRouter>
     </div>
   );
