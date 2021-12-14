@@ -10,7 +10,7 @@ function App() {
   const [characters, setCharacters] = useState([]);
 
   useEffect(() => {
-    getFilms(films);
+    getFilms();
     getCharacters();
   }, []);
   const getFilms = async () => {
@@ -33,17 +33,14 @@ function App() {
       },
     });
     const data = await resp.json();
-
-    const filmData = data.map((obj) => [
-      obj.title,
-      obj.title,
-      obj.boxOfficeRevenueInMillions,
-      obj.academyAwardNominations,
+    const filmData = data.map((item) => [
+      item.title,
+      item.title.toLowerCase().replace(/ /g, '-'),
+      item.box_office_total.toFixed().replace(/.0+$/, '0'),
+      item.academy_award_nominations,
     ]);
-
-    console.log(filmData);
-    // data.map() put copy and paste data from console.log(data). transform into above info.
-    return [films];
+    setFilms(filmData);
+    return [];
   };
 
   const getCharacters = async () => {
@@ -66,8 +63,14 @@ function App() {
       },
     });
     const data = await resp.json();
-    console.log(data);
-    return [characters];
+    const charData = data.map((item) => ({
+      name: item.name,
+      birth: item.birth,
+      death: item.death,
+      dates: item.birth === item.death ? 'Unknown' : `${item.birth} - ${item.death}`,
+    }));
+    setCharacters(charData);
+    return [];
   };
 
   return (
@@ -83,12 +86,10 @@ function App() {
         </header>
         <Switch>
           <Route exact path="/films">
-            <FilmList setFilms={setFilms} films={films} />
-            <h1> Hello </h1>
+            <FilmList films={films} />
           </Route>
           <Route path="/characters">
-            <CharacterList characters={characters} setCharacters={setCharacters} />
-            <h1>Test</h1>
+            <CharacterList characters={characters} />
           </Route>
         </Switch>
       </BrowserRouter>
