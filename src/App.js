@@ -36,7 +36,7 @@ function App() {
     const filmData = data.map((item) => [
       item.title,
       item.title.toLowerCase().replace(/ /g, '-'),
-      item.box_office_total.toFixed().replace(/.0+$/, '0'),
+      item.box_office_total,
       item.academy_award_nominations,
     ]);
     setFilms(filmData);
